@@ -12,6 +12,8 @@ drive.mount('/content/mydrive')
 
 import pandas as pd
 
+"""Reading Data using Pandas"""
+
 df = pd.read_csv('/content/mydrive/MyDrive/Fake News Data/train.csv')
 
 df.head()
@@ -19,6 +21,8 @@ df.head()
 df.shape
 
 df.isnull().sum()
+
+"""Removing null values"""
 
 df.dropna(axis =0,inplace=True)
 df.reset_index(inplace=True)
@@ -40,6 +44,8 @@ from nltk.corpus import stopwords
 from nltk import word_tokenize,sent_tokenize
 from nltk.stem import PorterStemmer
 
+"""Stop words creation"""
+
 stops = stopwords.words('english')
 lm = WordNetLemmatizer()
 ps = PorterStemmer()
@@ -51,6 +57,8 @@ stops.remove('nor')
 stops
 
 x = df['title']
+
+"""Text Cleaning and creating the word corpus"""
 
 from nltk.corpus.reader import wordlist
 corpus = []
@@ -91,14 +99,20 @@ from tensorflow.keras.layers import Embedding, Dropout,Dense, LSTM,Bidirectional
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import one_hot
 
+"""Vocabulary Size """
+
 voc_size = 5000
 
 corpus[0:1]
+
+"""Creating the text into onehot representation"""
 
 one_hot_rep = [one_hot(sent,voc_size) for sent in corpus]
 
 word_len = [len(word_corpus[i]) for i in range(len(word_corpus))]
 max(word_len)
+
+"""Pad the Onehot vectors"""
 
 emmbedded_sents = pad_sequences(one_hot_rep,maxlen = max(word_len),padding ='pre')
 
@@ -110,6 +124,8 @@ y = df['label']
 from sklearn.model_selection import train_test_split
 
 x_train,x_test,y_train,y_test = train_test_split(X,y,test_size = 0.2,random_state = 123,stratify=y)
+
+"""Creation to Model using LSTM or Bidirectional LSTM(Output dimention means size of each word in vector representation.)"""
 
 model = Sequential()
 model.add(Embedding(output_dim = 40,input_dim = voc_size,input_length =max(word_len)))
@@ -125,6 +141,8 @@ model.fit(x_train,y_train,epochs =20,verbose=1,batch_size=60,validation_data=(x_
 import numpy as np
 
 y_pred = np.round(model.predict(x_test),0)
+
+"""Testing the Model"""
 
 from sklearn.metrics import confusion_matrix,classification_report
 
